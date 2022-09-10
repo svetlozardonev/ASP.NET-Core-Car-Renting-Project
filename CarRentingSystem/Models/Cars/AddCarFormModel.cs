@@ -7,17 +7,17 @@ namespace CarRentingSystem.Models.Cars
     {
 
         [Required]
-        [StringLength(CarBrandMaxLength, 
+        [StringLength(CarBrandMaxLength,
             MinimumLength = CarBrandMinLength)]
         public string Brand { get; init; }
 
         [Required]
-        [StringLength(CarModelMaxLength, 
+        [StringLength(CarModelMaxLength,
             MinimumLength = CarModelMinLength)]
         public string Model { get; init; }
 
         [Required]
-        [StringLength(CarDescriptionMaxLength, 
+        [StringLength(CarDescriptionMaxLength,
             MinimumLength = CarDescriptionMinLength,
             ErrorMessage = "Your description must be between {2} - {1} length.")]
         public string Description { get; init; }

@@ -1,7 +1,10 @@
 ﻿using CarRentingSystem.Data;
 using CarRentingSystem.Data.Models;
 using CarRentingSystem.Models.Cars;
+using CarRentingSystem.Models.Home;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
 
 namespace CarRentingSystem.Controllers
 {
@@ -35,7 +38,36 @@ namespace CarRentingSystem.Controllers
             this.db.Cars.Add(carData);
             this.db.SaveChanges();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction(nameof(All));
+        }
+
+        public IActionResult All(string searchTerm)
+        {
+            var carsQuery = this.db.Cars.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                carsQuery = carsQuery.Where(s => s.Brand.ToLower().Contains(searchTerm.ToLower()));
+            }
+
+            var cars = carsQuery
+                .OrderByDescending(x => x.Id)
+                .Select(x => new ListingCarViewModel
+                {
+                    Id = x.Id,
+                    Brand = x.Brand,
+                    Model = x.Model,
+                    ImageUrl = x.ImageUrl,
+                    Year = x.Year
+                })
+                .ToList();
+            
+
+            return View(new AllCarsQueryModel
+            {
+                Cars = cars,
+                SearchTerm = searchTerm
+            });
         }
     }
 }
