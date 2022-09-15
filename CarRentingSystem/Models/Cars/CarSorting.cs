@@ -3,7 +3,6 @@
     public enum CarSorting
     {
         DateCreated = 0,
-        Year = 1,
-        Brand = 2
+        Year = 1
     }
 }

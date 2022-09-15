@@ -41,17 +41,31 @@ namespace CarRentingSystem.Controllers
             return RedirectToAction(nameof(All));
         }
 
-        public IActionResult All(string searchTerm)
+        public IActionResult All([FromQuery]AllCarsQueryModel query)
         {
             var carsQuery = this.db.Cars.AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(searchTerm))
+            if (!string.IsNullOrWhiteSpace(query.Brand))
             {
-                carsQuery = carsQuery.Where(s => s.Brand.ToLower().Contains(searchTerm.ToLower()));
+                carsQuery = carsQuery.Where(c => c.Brand == query.Brand);
             }
 
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                carsQuery = carsQuery.Where(s => s.Brand.ToLower().Contains(query.SearchTerm.ToLower()));
+            }
+
+            var totalCars = carsQuery.Count();
+
+            carsQuery = query.Sorting switch
+            {
+                CarSorting.Year => carsQuery.OrderByDescending(c => c.Year),
+                CarSorting.DateCreated or _ => carsQuery.OrderByDescending(c => c.Id)
+            };
+
             var cars = carsQuery
-                .OrderByDescending(x => x.Id)
+                .Skip((query.CurrentPage - 1) * AllCarsQueryModel.CarsPerPage)
+                .Take(AllCarsQueryModel.CarsPerPage)
                 .Select(x => new ListingCarViewModel
                 {
                     Id = x.Id,
@@ -61,13 +75,19 @@ namespace CarRentingSystem.Controllers
                     Year = x.Year
                 })
                 .ToList();
-            
 
-            return View(new AllCarsQueryModel
-            {
-                Cars = cars,
-                SearchTerm = searchTerm
-            });
+            var carBrands = this.db
+                .Cars
+                .Select(c => c.Brand)
+                .Distinct()
+                .OrderBy(br => br)
+                .ToList();
+
+            query.Brands = carBrands;
+            query.Cars = cars;
+            query.TotalCars = totalCars;
+
+            return View(query);
         }
     }
 }
