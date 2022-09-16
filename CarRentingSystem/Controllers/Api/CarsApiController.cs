@@ -1,4 +1,5 @@
-﻿using CarRentingSystem.Data;
+﻿using CarRentingSystem.Models.Api.Cars;
+using CarRentingSystem.Services.Cars;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarRentingSystem.Controllers.Api
@@ -7,11 +8,21 @@ namespace CarRentingSystem.Controllers.Api
     [ApiController]
     public class CarsApiController : ControllerBase
     {
-        private readonly CarRentingDbContext db;
+        private readonly ICarsService cars;
 
-        public CarsApiController(CarRentingDbContext data)
+        public CarsApiController(ICarsService cars)
         {
-            this.db = data;
+            this.cars = cars;
+        }
+
+        [HttpGet]
+        public CarQueryServiceModel All([FromQuery] AllCarsApiRequestModel query)
+        {
+            return this.cars.All(query.Brand,
+                query.SearchTerm,
+                query.Sorting, query.CurrentPage,
+                query.CarsPerPage);
+
         }
     }
 }
