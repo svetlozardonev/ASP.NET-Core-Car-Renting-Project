@@ -13,5 +13,9 @@
 
         public const int ReviewTitleMaxLength = 40;
         public const int ReviewContentMaxLength = 150;
+
+
+        public const int DealerNameMaxLength = 25;
+        public const int DealerPhoneNumberMaxLength = 25;
     }
 }

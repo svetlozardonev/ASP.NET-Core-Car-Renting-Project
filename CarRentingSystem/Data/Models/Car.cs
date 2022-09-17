@@ -24,5 +24,7 @@ namespace CarRentingSystem.Data.Models
         //public decimal RentPrice { get; set; }
         //public int RentingDays { get; set; }
         public IEnumerable<Review> Reviews { get; init; } = new List<Review>();
+        public int DealerId { get; set; }
+        public Dealer Dealer { get; set; }
     }
 }
