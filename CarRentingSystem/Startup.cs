@@ -2,6 +2,7 @@ using CarRentingSystem.Data;
 using CarRentingSystem.Infrastructure;
 using CarRentingSystem.Models.Api.Cars;
 using CarRentingSystem.Services.Cars;
+using CarRentingSystem.Services.Dealers;
 using CarRentingSystem.Services.Statistics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -42,8 +43,8 @@ namespace CarRentingSystem
             services.AddControllersWithViews();
 
             services.AddTransient<IStatisticsService, StatisticsService>();
-
             services.AddTransient<ICarsService, CarService>();
+            services.AddTransient<IDealerService, DealerService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

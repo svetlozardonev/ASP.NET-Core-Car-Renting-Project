@@ -12,6 +12,20 @@ namespace CarRentingSystem.Services.Cars
             int currentPage,
             int carsPerPage);
 
+        bool Edit(
+            int id,
+            string brand,
+            string model,
+            string description,
+            string imageUrl,
+            int year,
+            int dealerId
+            );
+
+        CarDetailsServiceModel Details(int carId);
+
+        IEnumerable<CarServiceModel> MyCars(string userId);
+
         IEnumerable<string> AllCarBrands();
     }
 }

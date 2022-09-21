@@ -1,4 +1,5 @@
 ﻿using CarRentingSystem.Data;
+using CarRentingSystem.Data.Models;
 using CarRentingSystem.Models.Cars;
 using CarRentingSystem.Services.Cars;
 using System.Collections.Generic;
@@ -41,18 +42,9 @@ namespace CarRentingSystem.Models.Api.Cars
                 CarSorting.DateCreated or _ => carsQuery.OrderByDescending(c => c.Id)
             };
 
-            var cars = carsQuery
+            var cars = GetCars(carsQuery
                 .Skip((currentPage - 1) * carsPerPage)
-                .Take(carsPerPage)
-                .Select(x => new CarServiceModel
-                {
-                    Id = x.Id,
-                    Brand = x.Brand,
-                    Model = x.Model,
-                    ImageUrl = x.ImageUrl,
-                    Year = x.Year
-                })
-                .ToList();
+                .Take(carsPerPage));
 
             return new CarQueryServiceModel
             {
@@ -61,6 +53,11 @@ namespace CarRentingSystem.Models.Api.Cars
                 CarsPerPage = carsPerPage,
                 Cars = cars
             };
+        }
+        public IEnumerable<CarServiceModel> MyCars(string userId)
+        {
+            return this.GetCars(this.data.Cars
+                .Where(c => c.Dealer.UserId == userId));
         }
 
         public IEnumerable<string> AllCarBrands()
@@ -71,6 +68,56 @@ namespace CarRentingSystem.Models.Api.Cars
                 .Distinct()
                 .OrderBy(br => br)
                 .ToList();
+        }
+
+        private IEnumerable<CarServiceModel> GetCars(IQueryable<Car> carQuery)
+        {
+            return carQuery.Select(c => new CarServiceModel
+            {
+                Id = c.Id,
+                Brand = c.Brand,
+                Model = c.Model,
+                ImageUrl = c.ImageUrl,
+                Year = c.Year
+            })
+            .ToList();
+        }
+
+        public CarDetailsServiceModel Details(int carId)
+        {
+            return this.data.Cars
+                .Where(c => c.Id == carId)
+                .Select(c => new CarDetailsServiceModel
+                {
+                    Id = c.Id,
+                    Brand = c.Brand,
+                    Model = c.Model,
+                    Description = c.Description,
+                    ImageUrl = c.ImageUrl,
+                    Year = c.Year,
+                    DealerId = c.DealerId,
+                    UserId = c.Dealer.UserId
+                }).FirstOrDefault();
+        }
+
+        public bool Edit(int id, string brand, string model, string description, string imageUrl, int year, int dealerId)
+        {
+            var carData = this.data.Cars.Find(id);
+
+            if (carData.DealerId != dealerId)
+            {
+                return false;
+            }
+
+            carData.Brand = brand;
+            carData.Model = model;
+            carData.Description = description;
+            carData.ImageUrl = imageUrl;
+            carData.Year = year;
+
+            this.data.SaveChanges();
+
+            return true;
         }
     }
 }

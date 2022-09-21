@@ -16,6 +16,8 @@
 
 
         public const int DealerNameMaxLength = 25;
+        public const int DealerNameMinLength = 2;
         public const int DealerPhoneNumberMaxLength = 25;
+        public const int DealerPhoneNumberMinLength = 4;
     }
 }
